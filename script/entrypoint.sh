@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 
-# User-provided configuration must always be respected.
-#
-# Therefore, this script must only derives Airflow AIRFLOW__ variables from other variables
-# when the user did not provide their own configuration.
-
 TRY_LOOP="20"
 
+: "${POSTGRES_HOST:="postgres"}"
+: "${POSTGRES_PORT:="5432"}"
+: "${POSTGRES_USER:="airflow"}"
+: "${POSTGRES_PASSWORD:="airflow"}"
+: "${POSTGRES_DB:="airflow"}"
+: "${POSTGRES_EXTRAS:-""}"
 # Global defaults and back-compat
 : "${AIRFLOW_HOME:="/usr/local/airflow"}"
 : "${AIRFLOW__CORE__FERNET_KEY:=${FERNET_KEY:=$(python -c "from cryptography.fernet import Fernet; FERNET_KEY = Fernet.generate_key().decode(); print(FERNET_KEY)")}}"
@@ -14,7 +15,7 @@ TRY_LOOP="20"
 
 export \
   AIRFLOW_HOME \
-	AIRFLOW__CORE__EXECUTOR \
+  AIRFLOW__CORE__EXECUTOR \
   AIRFLOW__CORE__FERNET_KEY \
 
 # Install custom python package if requirements.txt is present
@@ -35,6 +36,7 @@ wait_for_port() {
     sleep 5
   done
 }
+
 AIRFLOW__CORE__SQL_ALCHEMY_CONN="postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}${POSTGRES_EXTRAS}"
 export AIRFLOW__CORE__SQL_ALCHEMY_CONN
 
@@ -42,6 +44,7 @@ wait_for_port "Postgres" "$POSTGRES_HOST" "$POSTGRES_PORT"
 
 airflow initdb
 #airflow connections -l | awk -F"'" '{if ($2) print$2}' | xargs -I {} airflow connections -d --conn_id {}
-
 airflow scheduler &
 exec airflow webserver
+
+

@@ -8,11 +8,10 @@ All DAGs definitions are under the `dags` directory.
 Run the project locally as follows:
 Create the image
 ```sh
-docker build -t jdaareval/docker-airflow:0.1.0 .
+docker build -t jdaarevalo/docker-local-airflow:1.10.10 .
 ```
 Upload the containers
 ```sh
-docker-compose -f "docker-compose.yml" up -d
+docker-compose up -d
 ```
 This will run a postgres and airflow containers (ports 5432 and 8080 accordingly)
-

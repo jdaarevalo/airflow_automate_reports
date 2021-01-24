@@ -2,32 +2,28 @@ version: '3.7'
 services:
     postgres:
         image: postgres:9.6
-        env_file:
-            - .env
+        environment:
+            - POSTGRES_USER=airflow
+            - POSTGRES_PASSWORD=airflow
+            - POSTGRES_DB=airflow
         logging:
             options:
                 max-size: 10m
                 max-file: "3"
-        volumes:
-            - ./postgres-data:/var/lib/postgresql/data
     webserver:
-        image: jdaarevalo/docker-airflow:0.1.0
+        image: jdaarevalo/docker-local-airflow:1.10.10
         restart: always
         depends_on:
             - postgres
         environment:
             - LOAD_EX=n
-            - EXECUTOR=Local
         logging:
             options:
                 max-size: 10m
                 max-file: "3"
-        env_file:
-            - .env
         volumes:
             - ./dags:/usr/local/airflow/dags
-            - ./store_files:/usr/local/airflow/store_files
-            - ./plugins:/usr/local/airflow/plugins
+            # - ./plugins:/usr/local/airflow/plugins
         ports:
             - "8080:8080"
         command: webserver

@@ -1,7 +1,8 @@
-# VERSION 1.10.9
+# VERSION 1.10.10
+# UPDATED AND ADAPTED BY: jdaarevalo
 # AUTHOR: Matthieu "Puckel_" Roisil
 # DESCRIPTION: Basic Airflow container
-# BUILD: docker build --rm -t puckel/docker-airflow .
+# BUILD: docker build -t test/docker-airflow-test:1.10.10 .
 # SOURCE: https://github.com/puckel/docker-airflow
 
 FROM python:3.7-slim-buster
@@ -12,7 +13,7 @@ ENV DEBIAN_FRONTEND noninteractive
 ENV TERM linux
 
 # Airflow
-ARG AIRFLOW_VERSION=1.10.9
+ARG AIRFLOW_VERSION=1.10.10
 ARG AIRFLOW_USER_HOME=/usr/local/airflow
 ARG AIRFLOW_DEPS=""
 ARG PYTHON_DEPS=""
@@ -56,9 +57,6 @@ RUN set -ex \
     && useradd -ms /bin/bash -d ${AIRFLOW_USER_HOME} airflow \
     && pip install -U pip setuptools wheel \
     && pip install pytz \
-    && pip install flask-bcrypt \
-    && pip uninstall SQLAlchemy \
-    && pip install SQLAlchemy==1.3.15 \
     && pip install pyOpenSSL \
     && pip install ndg-httpsclient \
     && pip install pyasn1 \
@@ -80,7 +78,6 @@ COPY script/entrypoint.sh /entrypoint.sh
 COPY config/airflow.cfg ${AIRFLOW_USER_HOME}/airflow.cfg
 
 ADD dags ${AIRFLOW_HOME}/dags
-
 ADD requirements.txt .
 RUN pip install -r requirements.txt
 
