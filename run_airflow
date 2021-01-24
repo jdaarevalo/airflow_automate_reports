@@ -1,0 +1,6 @@
+#!/bin/bash
+
+docker ps -aq -f name=jdaarevalo/docker-airflow | xargs -I {} docker rm -f {}
+set -a
+source environment/.env
+docker-compose -f "docker-compose.yml" up -d
